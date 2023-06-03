@@ -1,0 +1,2 @@
+(test
+ (name optimistic_mutex_test) (libraries optimistic_mutex alcotest))
