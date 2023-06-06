@@ -80,9 +80,13 @@ Three domains.
 ```
 
 I suspect that we start seeing that spinlocks cannot wake each other up. All of
-the non-naive spinlocks are fair, and if a domain is in line and suspended,
-everyone waits. Thus, despite massive contention, `Naive_spinlock` is the one
-that fares to `Stdlib.Mutex`.
+the non-naive spinlocks are fair, and if a domain in line is suspended, everyone
+waits while scheduler rolls the dice. Thus, despite massive contention,
+`Naive_spinlock` is the one that fares to `Stdlib.Mutex`.
+
+Suspend/resume mechanism would help both approaches: the fair implementation may
+force wake the domain in line, while naive may put some to sleep to manage
+contention better.
 
 ## Heavily overcommited workload
 
