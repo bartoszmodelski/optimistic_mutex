@@ -79,5 +79,4 @@ module Test (Mutex : Intf) = struct
             test_case "multidomain stress test" `Slow multidomain_incr;
           ] );
       ]
-
 end

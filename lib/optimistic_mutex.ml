@@ -24,5 +24,3 @@ let try_lock { counter; _ } =
   * Don't use semaphore for parking and resuming domains.
   * "mutex" with timeout
 *)
-
-

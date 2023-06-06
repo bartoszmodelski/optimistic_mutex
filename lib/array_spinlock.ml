@@ -2,25 +2,31 @@ type t = {
   waiters : int Atomic.t array;
   ticket : int Atomic.t;
   owner : int ref;
+  mask : int;
+  size_exp : int;
 }
 
-let create ?(size = 256) () =
+let create ?(size_exp = 8) () =
+  let size = 1 lsl size_exp in
   let waiters = Array.init size (fun _ -> Atomic.make (-1)) in
   Atomic.set (Array.get waiters 0) 0;
   let ticket = Atomic.make 0 in
-  { waiters; ticket; owner = ref 0 }
+  let mask = size - 1 in
+  { waiters; ticket; owner = ref 0; mask; size_exp }
 
-let lock { waiters; ticket; owner } =
+let lock { waiters; ticket; owner; mask; size_exp } =
   let my = Atomic.fetch_and_add ticket 1 in
-  let length = Array.length waiters in
-  let index = my mod length in
-  let round = my / length in
-  while Atomic.get (Array.get waiters index) != round do
+  let index = my land mask in
+  let round = my lsr size_exp in
+  let cell = Array.unsafe_get waiters index in
+  while Atomic.get cell != round do
     Domain.cpu_relax ()
   done;
   owner := index
 
-let unlock { waiters; owner; _ } =
-  let index = (!owner + 1) mod Array.length waiters in
-  let round = Array.get waiters index in
+let unlock { waiters; owner; mask; _ } =
+  let index = (!owner + 1) land mask in
+  let round = Array.unsafe_get waiters index in
+  (* Need this to be atomic to force barrier. It'd be nice if
+     we could force it without doing an atomic. *)
   Atomic.incr round

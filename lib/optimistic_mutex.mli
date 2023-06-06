@@ -26,6 +26,3 @@ val try_lock : t -> bool
 (** Same as Mutex.lock, but does not suspend the calling thread if the mutex
    is already locked: just return false immediately in that case. If the mutex
    is unlocked, lock it and return true. *)
-
-
-
