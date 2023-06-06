@@ -26,3 +26,4 @@ $ dune exec -- bench/bench.exe --domains 3 --cycles 1000000
 # Install
 
 `opam pin add optimistic_mutex git@github.com:bartoszmodelski/optimistic_mutex.git`
+

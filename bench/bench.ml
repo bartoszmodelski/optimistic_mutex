@@ -6,8 +6,20 @@ module type Intf = sig
   val unlock : t -> unit
 end
 
+module Array_spinlock = struct
+  include Mutexlib.Array_spinlock
+
+  let create () = create ()
+end
+
 let implementations =
-  [ ("Stdlib.Mutex\t\t", (module Mutex : Intf)); ("Optimistic_mutex\t", (module Optimistic_mutex)) ]
+  [
+    ("Stdlib.Mutex\t\t", (module Mutex : Intf));
+    ("Optimistic_mutex\t", (module Mutexlib.Optimistic_mutex));
+    ("Mcs_spinlock\t\t", (module Mutexlib.Mcs_spinlock : Intf));
+    ("Ticket_spinlock\t", (module Mutexlib.Ticket_spinlock : Intf));
+    ("Array_spinlock\t\t", (module Array_spinlock : Intf));
+  ]
 
 let workload (type t) ~cycles ~barrier (module Mutex : Intf with type t = t)
     (mutex : t) =
@@ -27,12 +39,13 @@ let workload (type t) ~cycles ~barrier (module Mutex : Intf with type t = t)
   diff
 
 let bench ~domains ~cycles ~implementation =
+  Gc.full_major ();
   let module Mutex = (val implementation : Intf) in
   let mutex = Mutex.create () in
   let barrier = Atomic.make domains in
   let domains_handles =
     List.init domains (fun _ ->
-        Domain.spawn (fun () -> workload ~cycles ~barrier  (module Mutex) mutex))
+        Domain.spawn (fun () -> workload ~cycles ~barrier (module Mutex) mutex))
   in
   let results = List.map Domain.join domains_handles in
   Stats.mean results
@@ -44,11 +57,13 @@ let run_single ~domains ~cycles (name, implementation) =
     Array.set data i time
   done;
   let median = Stats.median (Array.to_list data) in
-  let median_per_op = median /. (Int.to_float cycles) in
+  let median_per_op = median /. Int.to_float cycles in
   let median_ns_per_op = median_per_op *. 1_000_000_000. in
   Printf.printf "[%s] time median: %.2f ns/op\n%!" name median_ns_per_op
 
-let run domains cycles = List.iter (run_single ~domains ~cycles) implementations
+let run domains cycles =
+  Printf.printf "\n%!";
+  List.iter (run_single ~domains ~cycles) implementations
 
 open Cmdliner
 
@@ -72,4 +87,6 @@ let cmd =
 
 let () =
   exit @@ Cmd.eval
-  @@ Cmd.v (Cmd.info ~doc:"Optimistic_mutex Benchmark" "optimistic_mutex_benchmark") cmd
+  @@ Cmd.v
+       (Cmd.info ~doc:"Optimistic_mutex Benchmark" "optimistic_mutex_benchmark")
+       cmd

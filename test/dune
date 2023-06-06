@@ -1,2 +1,24 @@
+(library
+ (name standard_test)
+ (libraries alcotest)
+ (modules standard_test))
+
 (test
- (name optimistic_mutex_test) (libraries optimistic_mutex alcotest))
+ (name optimistic_mutex_test)
+ (libraries mutexlib standard_test)
+ (modules optimistic_mutex_test))
+
+(test
+ (name ticket_spinlock_test)
+ (libraries mutexlib standard_test)
+ (modules ticket_spinlock_test))
+
+(test
+ (name mcs_spinlock_test)
+ (libraries mutexlib standard_test)
+ (modules mcs_spinlock_test))
+
+(test
+ (name array_spinlock_test)
+ (libraries mutexlib standard_test)
+ (modules array_spinlock_test))

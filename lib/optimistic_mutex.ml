@@ -15,8 +15,14 @@ let unlock { sem; counter } =
   if index <= 0 then failwith "mutex.unlock: not locked";
   if index == 1 then () else Semaphore.Binary.release sem
 
+let try_lock { counter; _ } =
+  Atomic.get counter == 0 && Atomic.compare_and_set counter 0 1
+
 (*
   Further ideas:
   * Fenceless FAD - only need to emit a barrier if acquired the lock on quick path.
   * Don't use semaphore for parking and resuming domains.
+  * "mutex" with timeout
 *)
+
+

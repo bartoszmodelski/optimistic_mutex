@@ -1,7 +1,7 @@
 module Mutex = struct
-  include Mutexlib.Optimistic_mutex
+  include Mutexlib.Ticket_spinlock
 
-  let name = "Optimistic_mutex"
+  let name = "Ticket_spinlock"
 end
 
 module Test = Standard_test.Test (Mutex)

@@ -1,3 +1,3 @@
 (library
- (public_name optimistic_mutex)
- (name optimistic_mutex))
+ (public_name mutexlib)
+ (name mutexlib))
