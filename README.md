@@ -2,20 +2,20 @@
 
 A menagerie of locks for all occassions.
 
-- `Optimistic_mutex` - a wrapper for `Stdlib.Mutex`, which skips the call into
+- [Optimistic_mutex](lib/optimistic_mutex.ml)- a wrapper for `Stdlib.Mutex`, which skips the call into
   `pthreads`, when the mutex is available. Tends to be 60-65% faster than
   `Stdlib.Mutex` on a single-core benchmark. If there's contention, it falls
   back onto standard library's conditional variable to avoid spinning (and
   that's more costly).
-- `Ticket_spinlock` - a simple ticket spinlock with two atomic variables (hence
+- [Ticket_spinlock](lib/ticket_spinlock.ml) - a simple ticket spinlock with two atomic variables (hence
   less contention but no `try_lock` function). Performs surprisingly well.
-- `Mcs_spinlock` - a classic lock based on a linked list, that lets all waiters
+- [Mcs_spinlock](lib/mcs_spinlock.ml) - a classic lock based on a linked list, that lets all waiters
   spin on disjoint memory regions. Generally disappointing. Tends to be the
   worst of all locks on longer benchmark (I suspect GC). It dominates other only
   very specific workloads (e.g. ultra-overcommited ones or very bursty).
-- `Array_spinlock` - similar story to Mcs, although tends to be a bit better in
+- [Array_spinlock](lib/array_spinlock.ml) - similar story to Mcs, although tends to be a bit better in
   the average case.
-- `Naive_spinlock` - well, naive spinlock.
+- [Naive_spinlock](lib/naive_spinlock.ml) - well, naive spinlock.
 
 # Benchmarks
 
