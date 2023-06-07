@@ -22,3 +22,8 @@
  (name array_spinlock_test)
  (libraries mutexlib standard_test)
  (modules array_spinlock_test))
+
+(test
+ (name suspend_resume_test)
+ (libraries suspend_resume unix)
+ (modules suspend_resume_test))

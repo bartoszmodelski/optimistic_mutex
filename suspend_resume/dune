@@ -1,0 +1,6 @@
+(library
+ (name suspend_resume)
+ (foreign_stubs
+  (language cxx)
+  (names suspend_resume_stubs)
+  (flags -O2 -fPIC -std=c++20)))
