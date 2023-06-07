@@ -15,7 +15,7 @@ A menagerie of locks for all occassions.
   very specific workloads (e.g. ultra-overcommited ones or very bursty).
 - [Array_spinlock](lib/array_spinlock.ml) - similar story to Mcs, although tends to be a bit better in
   the average case.
-- [Naive_spinlock](lib/naive_spinlock.ml) - well, naive spinlock.
+- [Naive_spinlock](lib/naive_spinlock.ml) - well, contentious and unfair spinlock.
 
 # Benchmarks
 
